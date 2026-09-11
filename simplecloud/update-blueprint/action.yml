@@ -1,0 +1,94 @@
+name: 'Update SimpleCloud Blueprint'
+description: 'Partially updates a SimpleCloud blueprint'
+author: 'Janis'
+
+inputs:
+  network-id:
+    description: 'SimpleCloud Network ID'
+    required: true
+  network-credential:
+    description: 'SimpleCloud Network Credential'
+    required: true
+  api-url:
+    description: 'Controller API URL'
+    required: false
+    default: 'https://controller.simplecloud.app'
+
+  blueprint-id:
+    description: 'Blueprint ID (provide this or blueprint-name)'
+    required: false
+    default: ''
+  blueprint-name:
+    description: 'Blueprint name, resolved to an ID if blueprint-id is not set'
+    required: false
+    default: ''
+
+  server-url:
+    description: 'New server_url'
+    required: false
+    default: ''
+  name:
+    description: 'New blueprint name'
+    required: false
+    default: ''
+  minecraft-version:
+    description: 'New minecraft_version'
+    required: false
+    default: ''
+  server-software:
+    description: 'New server_software (e.g. paper, minestom)'
+    required: false
+    default: ''
+  software-version:
+    description: 'New software_version'
+    required: false
+    default: ''
+  configurator:
+    description: 'New configurator'
+    required: false
+    default: ''
+  workflow-steps:
+    description: 'Comma-separated list, replaces the whole array'
+    required: false
+    default: ''
+  runtime-config-type:
+    description: 'runtime_config.type (e.g. java)'
+    required: false
+    default: ''
+  runtime-config-with:
+    description: 'Raw JSON object string, e.g. {"memory":"2G"}'
+    required: false
+    default: ''
+
+outputs:
+  blueprint-id:
+    description: 'ID of the updated blueprint'
+    value: ${{ steps.update.outputs.blueprint_id }}
+  updated-at:
+    description: 'updated_at timestamp returned by the API'
+    value: ${{ steps.update.outputs.updated_at }}
+  response:
+    description: 'Full raw JSON response body'
+    value: ${{ steps.update.outputs.response }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: update
+      shell: bash
+      env:
+        NETWORK_ID: ${{ inputs.network-id }}
+        NETWORK_CREDENTIAL: ${{ inputs.network-credential }}
+        API_URL: ${{ inputs.api-url }}
+        BLUEPRINT_ID: ${{ inputs.blueprint-id }}
+        BLUEPRINT_NAME: ${{ inputs.blueprint-name }}
+        IN_SERVER_URL: ${{ inputs.server-url }}
+        IN_NAME: ${{ inputs.name }}
+        IN_MINECRAFT_VERSION: ${{ inputs.minecraft-version }}
+        IN_SERVER_SOFTWARE: ${{ inputs.server-software }}
+        IN_SOFTWARE_VERSION: ${{ inputs.software-version }}
+        IN_CONFIGURATOR: ${{ inputs.configurator }}
+        IN_WORKFLOW_STEPS: ${{ inputs.workflow-steps }}
+        IN_RUNTIME_CONFIG_TYPE: ${{ inputs.runtime-config-type }}
+        IN_RUNTIME_CONFIG_WITH: ${{ inputs.runtime-config-with }}
+      run: ${{ github.action_path }}/scripts/update-blueprint.sh
